@@ -2,6 +2,7 @@
 """
 word = 'Python'
 print(word[0])
+word[42] -> index out of range
 """
 
 # Number
@@ -16,14 +17,12 @@ print(10 % 3)
 print(10 // 4)
 '''
 
-# word[42]
-# index out of range
-
 # Lists
 """
 squares = [1, 4, 9, 16, 25]
 print(squares)
 
+# Append Lists
 squares = squares + [36, 49, 64, 81, 100]
 print(squares)
 
@@ -34,6 +33,7 @@ print(cubes)
 
 # index (x, y]
 """
+cubes = [1, 8, 27, 64, 125]
 print(cubes[0:3])
 
 letters = ['a', 'b', 'c', 'd', 'e']
@@ -43,12 +43,16 @@ letters[1:3] = ['B', 'C']
 print(letters[1:3])
 """
 
-# String
+# Print & String
 '''
 number1 = 10
 number2 = "three"
 number3 = "%d - 7 = %s" % (number1, number2)
 print(number3)
+
+print("Python", "PyCharm")
+i = 256 * 256
+print('The value of i is', i)
 '''
 
 # matrix
@@ -58,12 +62,6 @@ n = [1, 2, 3]
 x = [a, n]
 print(x)
 print(x[0][1])
-"""
-
-"""
-print("Python", "PyCharm")
-i = 256 * 256
-print('The value of i is', i)
 """
 
 # while
@@ -104,14 +102,15 @@ for w in words:
     
 for i in range(1, 10):
     print(i, end=' ')
+    
+animals = ['cat', 'dog', 'cow']
+print(animals[:])
 """
-
-words = ['cat', 'widow', 'defenestrate']
-# print(words[:])
 
 """
 for w in words[:]:
     if len(w) > 6:
+        # word insert into index [x] // insert(x, word)
         words.insert(0, w)
 
 print(words)
@@ -133,6 +132,7 @@ arr = ['mary', 'had', 'a', 'little', 'lamb']
 for i in range(len(arr)):
     print(i, arr[i])
 """
+
 '''
 # n of range : 2 ~ 9
 # x of range : 2 ~ n
@@ -162,6 +162,7 @@ print(sum_mul('sum', 1,2,3,4,5,6))
 '''
 
 # Key - Value Parameter
+'''
 def func(*args, **kwargs):
     print(args)
     print(kwargs)
@@ -169,10 +170,11 @@ def func(*args, **kwargs):
 func(1,2,3, name='foo', age=3)
 
 # args = tuple, kwargs = dictionary
+'''
 
 # File I/O
 '''
-f = open('C:/Users/USER/Desktop/PythonSeminar/write.txt', 'w')
+f = open('C:/Users/USER/Desktop/Python-Basic/write.txt', 'w')
 for i in range(1, 11):
     data = "%d번째 줄입니다.\n" % i
     f.write(data)
@@ -180,7 +182,7 @@ f.close()
 '''
 
 '''
-f = open('C:/Users/USER/Desktop/PythonSeminar/write.txt', 'r')
+f = open('C:/Users/USER/Desktop/Python-Basic/write.txt', 'r')
 lines = f.readlines()
 for line in lines:
     print(line)
@@ -189,7 +191,7 @@ f.close()
 '''
 
 '''
-with open('C:/Users/USER/Desktop/PythonSeminar/write.txt', 'a') as f:
+with open('C:/Users/USER/Desktop/Python-Basic/write.txt', 'a') as f:
     for i in range(11, 21):
         data = "%d번째 줄입니다.\n" % i
         f.write(data)
