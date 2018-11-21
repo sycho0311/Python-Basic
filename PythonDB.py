@@ -4,14 +4,15 @@ conn = pymysql.connect(host='localhost', user='root', password='1234', db='pytho
 
 try:
     curs = conn.cursor()
-    sql = "select * from test"
+    sql = "select firstName from test where lastName = 'lee'"
     curs.execute(sql)
     rows = curs.fetchall()
-
+    '''
     with open('C:/Users/USER/Desktop/Python-Basic/db.txt', 'a') as f:
         for data in rows:
             d = str(list(data)) + '\n'
             f.write(d)
+    '''
 
     print(rows)
 

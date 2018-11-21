@@ -72,3 +72,14 @@ print(response.read().decode('utf8'))
 
 # urllib.request.Request : when request & response not json string, json bytes
 '''
+
+arr = []
+
+with codecs.open('C:/Users/USER/Desktop/Python-Basic/name.json', 'r', 'utf-8') as f:
+    data = json.load(f)
+
+    print(len(data))
+
+    for i in data:
+        for info in data[i]:
+            print(i, info)
