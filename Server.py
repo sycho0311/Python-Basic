@@ -1,3 +1,4 @@
+'''
 import socket
 import sys
 
@@ -30,8 +31,9 @@ with conn:
         data = conn.recv(1024)
         if not data: break
         conn.send(data)
-
 '''
+
+
 import socket
 
 HOST = ''
@@ -48,7 +50,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             if not data:
                 break
             conn.sendall(data)
-'''
+
 
 '''
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
