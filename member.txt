@@ -1,0 +1,7 @@
+name, 아모개
+name, 야야
+name, 육비
+name, 지지
+name, 모아
+name, 마망
+
