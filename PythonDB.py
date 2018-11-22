@@ -2,7 +2,7 @@ import pymysql
 
 query = input()
 
-conn = pymysql.connect(host='172.30.4.176', user='root', password='1234', db='pythondb', charset='utf8')
+conn = pymysql.connect(host='localhost', user='root', password='1234', db='pythondb', charset='utf8')
 
 try:
 
