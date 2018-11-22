@@ -1,6 +1,8 @@
 import json
 import codecs
+
 import urllib.request
+import csv
 
 '''
 class Json:
@@ -73,6 +75,7 @@ print(response.read().decode('utf8'))
 # urllib.request.Request : when request & response not json string, json bytes
 '''
 
+'''
 arr = []
 
 with codecs.open('C:/Users/USER/Desktop/Python-Basic/name.json', 'r', 'utf-8') as f:
@@ -83,3 +86,37 @@ with codecs.open('C:/Users/USER/Desktop/Python-Basic/name.json', 'r', 'utf-8') a
     for i in data:
         for info in data[i]:
             print(i, info)
+'''
+
+korean = list()
+english = list()
+language = {}
+
+with codecs.open('KorEng.json', 'r', 'utf-8') as f:
+    data = json.load(f)
+
+    # print(len(data))
+
+    for i in data:
+        if i == 'kor':
+            korean = data[i]
+        elif i == 'eng':
+            english = data[i]
+
+korean.insert(0, 'KOREAN')
+english.insert(0, 'ENGLISH')
+
+'''
+for i in range(len(english)):
+    kor = korean[i]
+    eng = english[i]
+
+    language[str(kor)] = str(eng)
+'''
+
+list_out = []
+
+with open('test_out.csv', 'a', encoding='utf-8', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(korean)
+    writer.writerow(english)

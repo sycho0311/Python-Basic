@@ -1,20 +1,32 @@
 import pymysql
 
-conn = pymysql.connect(host='localhost', user='root', password='1234', db='pythondb', charset='utf8')
+query = input()
+
+conn = pymysql.connect(host='172.30.4.176', user='root', password='1234', db='pythondb', charset='utf8')
 
 try:
-    curs = conn.cursor()
-    sql = "select firstName from test where lastName = 'lee'"
-    curs.execute(sql)
-    rows = curs.fetchall()
+
+    with conn.cursor() as curs:
+        sql = "select firstName from test where lastName = %s"
+        print(sql)
+        curs.execute(sql, query)
+        rs = curs.fetchall()
+    
+    print(rs)
+
+    '''
+    with conn.cursor() as curs:
+        sql = "insert into test(lastName, firstName) values (%s, %s)"
+        curs.execute(sql, ("yoo", "jinseok"))
+
+    conn.commit()
+    '''
     '''
     with open('C:/Users/USER/Desktop/Python-Basic/db.txt', 'a') as f:
         for data in rows:
             d = str(list(data)) + '\n'
             f.write(d)
     '''
-
-    print(rows)
 
 finally:
     conn.close()
