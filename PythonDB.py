@@ -1,18 +1,36 @@
 import pymysql
 
+q1 = input()
+q2 = input()
 query = input()
 
-conn = pymysql.connect(host='localhost', user='root', password='1234', db='pythondb', charset='utf8')
+conn = pymysql.connect(host='localhost', port=3306, user='root', password='1234', db='pythondb', charset='utf8')
 
 try:
 
     with conn.cursor() as curs:
-        sql = "select firstName from test where lastName = %s"
+        # sql = "select firstName from test where lastName = %s"
+        # sql = "select %s from test where firstName = %s" % (q2, query)
+        sql = "select " + q1 + " from test where " + q2 + " = %s"
         print(sql)
+        # curs.execute(sql, (q1, q2, query))
         curs.execute(sql, query)
-        rs = curs.fetchall()
-    
+        # rs = curs.fetchall()
+        rs = curs.fetchone()
+
     print(rs)
+
+    '''
+    def insert_row(cursor, data, table):
+
+        placeholders = ', '.join(['%s'] * len(data))
+        columns = ', '.join(data.keys())
+        updates = []
+        key_placeholders = ', '.join(['{0}=%s'.format(k) for k in data.keys()])
+        sql = "INSERT INTO %s ( %s ) VALUES ( %s ) ON DUPLICATE KEY UPDATE %s" % (table, columns, placeholders, key_placeholders)
+        cursor.execute(sql, data.values() * 2)
+
+    '''
 
     '''
     with conn.cursor() as curs:

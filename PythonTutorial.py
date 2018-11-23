@@ -197,7 +197,13 @@ with open('C:/Users/USER/Desktop/Python-Basic/write.txt', 'a') as f:
         f.write(data)
 '''
 
+
 s = '/file KorEng.json'
+
 sentence = s.split()
+
+print(sentence[0])
+
 for i in sentence:
+
     print(i)

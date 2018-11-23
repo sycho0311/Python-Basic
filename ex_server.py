@@ -43,21 +43,45 @@ class UserManager:  # 사용자 관리 및 메세지 송수신을 담당하는 �
         '''
 
     def messageHandler(self, username, msg):  # 수신 Message 처리하는 부분
-        if msg.strip == '/file': # 수신 메세지가 'file'이면 클라이언트로부터 .json 파일을 수신
+
+        message = msg.split()
+
+        if message[0] == '/file':  # 수신 메세지가 'file'이면 클라이언트로부터 .json 파일을 수신
             return
 
-        elif msg.strip == '/query':  # 수신 메세지가 'query'이면 클라이언트에게 번역문 전송
-            # self.sendMessageToAll('[%s] %s' % (username, msg))
-            # self.sendMessage(username, msg)
+        elif message[0] == '/query':  # 수신 메세지가 'query'이면 클라이언트에게 번역문 전송
+            language = message[1]
+            sentence = message[2]
+            target = message[3]
+
+            conn = pymysql.connect(host='localhost', user='root', password='1234', db='pythondb', charset='utf8')
+
+            try:
+                with conn.cursor() as curs:
+                    sql = "select " + target + " from translation where " + language + " = %s"
+                    # print(sql)
+                    curs.execute(sql, sentence)
+                    rs = curs.fetchone()
+
+                data = sentence + " = " + rs[0]
+                # print(data)
+
+            finally:
+                conn.close()
+
+            self.sendMessage(username, data)
+
             return
 
-        elif msg.strip() == '/quit':  # 수신 메세지가 'quit'이면 클라이언트 접속 해제
+        elif message[0] == '/quit':  # 수신 메세지가 'quit'이면 클라이언트 접속 해제
             self.removeUser(username)
             return -1
 
         else:
-            self.sendMessage(username)
+            msg = 'Please proceed according to the usage.'
+            self.sendMessage(username, msg)
 
+        # self.sendMessageToAll('[%s] %s' % (username, msg))
     '''
     접속한 클라이언트 전체 메세지 송신
     def sendMessageToAll(self, msg):
@@ -67,10 +91,9 @@ class UserManager:  # 사용자 관리 및 메세지 송수신을 담당하는 �
     
     '''
 
-    def sendMessage(self, username):  # 메세지를 보낸 해당 사용자에게 답변
+    def sendMessage(self, username, msg):  # 메세지를 보낸 해당 사용자에게 답변
         user = self.users.get(username)
         conn = user[0]
-        msg = 'Please proceed according to the usage.'
 
         # TODO
         '''
@@ -94,7 +117,9 @@ class MyTcpHandler(socketserver.BaseRequestHandler):
             username = self.registerUsername()
             # 클라이언트로부터 message 수신
             # message 크기 최대 1024
-            usage = '* Usage *\n' + '1. File Transport : /file filename\n' + '2. Query : /query Target_Language sentence\n' + '3. Quit : /quit\n'
+            usage = '* Usage *\n' + '1. File Transport : /file filename\n'\
+                    + '2. Query : /query Language_to_Translate sentence Target_Language\n'\
+                    + '3. Quit : /quit\n'
             self.request.send(usage.encode())
             msg = self.request.recv(1024)
 
