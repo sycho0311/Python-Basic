@@ -10,10 +10,8 @@ try:
 
     with conn.cursor() as curs:
         # sql = "select firstName from test where lastName = %s"
-        # sql = "select %s from test where firstName = %s" % (q2, query)
         sql = "select " + q1 + " from test where " + q2 + " = %s"
         print(sql)
-        # curs.execute(sql, (q1, q2, query))
         curs.execute(sql, query)
         # rs = curs.fetchall()
         rs = curs.fetchone()

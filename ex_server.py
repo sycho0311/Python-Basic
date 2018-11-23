@@ -9,15 +9,15 @@ lock = threading.Lock()  # syncronized 동기화 진행하는 스레드 생성
 class UserManager:  # 사용자 관리 및 메세지 송수신을 담당하는 클래스
 
     def __init__(self):
-        self.users = {}  # 사용자의 등록 정보를 담을 사전 {사용자 이름:(소켓,주소),...}
+        self.users = {}  # User Info Dictionary {User ID:(socket, address), }
 
-    def addUser(self, username, conn, addr):  # 사용자 ID를 self.users에 추가하는 함수
+    def addUser(self, username, conn, addr):  # Add User ID to self.users
 
-        if username in self.users:  # 이미 등록된 사용자라면
-            conn.send('이미 등록된 사용자입니다.\n'.encode())
+        if username in self.users:  # Already used ID
+            conn.send('Already a registered ID.\n'.encode())
             return None
 
-        # 새로운 사용자를 등록함
+        # new user ID
         lock.acquire()  # 스레드 동기화를 막기위한 락
         self.users[username] = (conn, addr)
         lock.release()  # 업데이트 후 락 해제
@@ -29,7 +29,7 @@ class UserManager:  # 사용자 관리 및 메세지 송수신을 담당하는 �
 
         return username
 
-    def removeUser(self, username):  # 사용자를 제거하는 함수
+    def removeUser(self, username):  # Delete user ID
         if username not in self.users:
             return
 
@@ -45,7 +45,7 @@ class UserManager:  # 사용자 관리 및 메세지 송수신을 담당하는 �
     def messageHandler(self, username, msg):  # 수신 Message 처리하는 부분
 
         message = msg.split()
-
+        # TODO
         if message[0] == '/file':  # 수신 메세지가 'file'이면 클라이언트로부터 .json 파일을 수신
             return
 
@@ -82,6 +82,7 @@ class UserManager:  # 사용자 관리 및 메세지 송수신을 담당하는 �
             self.sendMessage(username, msg)
 
         # self.sendMessageToAll('[%s] %s' % (username, msg))
+
     '''
     접속한 클라이언트 전체 메세지 송신
     def sendMessageToAll(self, msg):
@@ -95,13 +96,6 @@ class UserManager:  # 사용자 관리 및 메세지 송수신을 담당하는 �
         user = self.users.get(username)
         conn = user[0]
 
-        # TODO
-        '''
-            수신한 메세지를 통해
-            1. 파일을 수신할 것인지
-            2. Query를 진행할 것인지
-            3. 종료
-        '''
         # print(msg)
 
         conn.send(msg.encode())
@@ -110,7 +104,7 @@ class MyTcpHandler(socketserver.BaseRequestHandler):
     userman = UserManager()
 
     def handle(self):  # 클라이언트가 접속시 클라이언트 주소 출력
-        print('IP Address : [%s] Connected' % self.client_address[0])
+        print('IP Address : [%s] Connection' % self.client_address[0])
 
         try:
             # 클라이언트 등록
@@ -134,7 +128,7 @@ class MyTcpHandler(socketserver.BaseRequestHandler):
         except Exception as e:
             print(e)
 
-        print('[%s] 접속종료' % self.client_address[0])
+        print('IP Address : [%s] Connection termination' % self.client_address[0])
         self.userman.removeUser(username)
 
     # 접속한 클라이언트를 등록하기 위함
