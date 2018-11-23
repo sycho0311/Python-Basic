@@ -196,3 +196,8 @@ with open('C:/Users/USER/Desktop/Python-Basic/write.txt', 'a') as f:
         data = "%d번째 줄입니다.\n" % i
         f.write(data)
 '''
+
+s = '/file KorEng.json'
+sentence = s.split()
+for i in sentence:
+    print(i)

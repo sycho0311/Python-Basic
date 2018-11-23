@@ -1,21 +1,18 @@
 import socketserver
 import threading
+import pymysql
 
 HOST = ''
 PORT = 9009
 lock = threading.Lock()  # syncronized 동기화 진행하는 스레드 생성
 
-
-class UserManager:  # 사용자관리 및 채팅 메세지 전송을 담당하는 클래스
-    # ① 채팅 서버로 입장한 사용자의 등록
-    # ② 채팅을 종료하는 사용자의 퇴장 관리
-    # ③ 사용자가 입장하고 퇴장하는 관리
-    # ④ 사용자가 입력한 메세지를 채팅 서버에 접속한 모두에게 전송
+class UserManager:  # 사용자 관리 및 메세지 송수신을 담당하는 클래스
 
     def __init__(self):
         self.users = {}  # 사용자의 등록 정보를 담을 사전 {사용자 이름:(소켓,주소),...}
 
     def addUser(self, username, conn, addr):  # 사용자 ID를 self.users에 추가하는 함수
+
         if username in self.users:  # 이미 등록된 사용자라면
             conn.send('이미 등록된 사용자입니다.\n'.encode())
             return None
@@ -25,8 +22,10 @@ class UserManager:  # 사용자관리 및 채팅 메세지 전송을 담당하�
         self.users[username] = (conn, addr)
         lock.release()  # 업데이트 후 락 해제
 
+        '''    
         self.sendMessageToAll('[%s]님이 입장했습니다.' % username)
         print('+++ 대화 참여자 수 [%d]' % len(self.users))
+        '''
 
         return username
 
@@ -38,37 +37,73 @@ class UserManager:  # 사용자관리 및 채팅 메세지 전송을 담당하�
         del self.users[username]
         lock.release()
 
+        '''
         self.sendMessageToAll('[%s]님이 퇴장했습니다.' % username)
         print('--- 대화 참여자 수 [%d]' % len(self.users))
+        '''
 
-    def messageHandler(self, username, msg):  # 전송한 msg를 처리하는 부분
-        if msg[0] != '/':  # 보낸 메세지의 첫문자가 '/'가 아니면
-            self.sendMessageToAll('[%s] %s' % (username, msg))
+    def messageHandler(self, username, msg):  # 수신 Message 처리하는 부분
+        if msg.strip == '/file': # 수신 메세지가 'file'이면 클라이언트로부터 .json 파일을 수신
             return
 
-        if msg.strip() == '/quit':  # 보낸 메세지가 'quit'이면
+        elif msg.strip == '/query':  # 수신 메세지가 'query'이면 클라이언트에게 번역문 전송
+            # self.sendMessageToAll('[%s] %s' % (username, msg))
+            # self.sendMessage(username, msg)
+            return
+
+        elif msg.strip() == '/quit':  # 수신 메세지가 'quit'이면 클라이언트 접속 해제
             self.removeUser(username)
             return -1
 
+        else:
+            self.sendMessage(username)
+
+    '''
+    접속한 클라이언트 전체 메세지 송신
     def sendMessageToAll(self, msg):
+        
         for conn, addr in self.users.values():
             conn.send(msg.encode())
+    
+    '''
 
+    def sendMessage(self, username):  # 메세지를 보낸 해당 사용자에게 답변
+        user = self.users.get(username)
+        conn = user[0]
+        msg = 'Please proceed according to the usage.'
+
+        # TODO
+        '''
+            수신한 메세지를 통해
+            1. 파일을 수신할 것인지
+            2. Query를 진행할 것인지
+            3. 종료
+        '''
+        # print(msg)
+
+        conn.send(msg.encode())
 
 class MyTcpHandler(socketserver.BaseRequestHandler):
     userman = UserManager()
 
     def handle(self):  # 클라이언트가 접속시 클라이언트 주소 출력
-        print('[%s] 연결됨' % self.client_address[0])
+        print('IP Address : [%s] Connected' % self.client_address[0])
 
         try:
+            # 클라이언트 등록
             username = self.registerUsername()
+            # 클라이언트로부터 message 수신
+            # message 크기 최대 1024
+            usage = '* Usage *\n' + '1. File Transport : /file filename\n' + '2. Query : /query Target_Language sentence\n' + '3. Quit : /quit\n'
+            self.request.send(usage.encode())
             msg = self.request.recv(1024)
+
             while msg:
-                print(msg.decode())
+                # print(msg.decode())
                 if self.userman.messageHandler(username, msg.decode()) == -1:
                     self.request.close()
                     break
+                self.request.send(usage.encode())
                 msg = self.request.recv(1024)
 
         except Exception as e:
@@ -77,30 +112,30 @@ class MyTcpHandler(socketserver.BaseRequestHandler):
         print('[%s] 접속종료' % self.client_address[0])
         self.userman.removeUser(username)
 
+    # 접속한 클라이언트를 등록하기 위함
     def registerUsername(self):
         while True:
-            self.request.send('로그인ID:'.encode())
+            self.request.send('Input ID : '.encode())
+            # 받아온 ID 처리
             username = self.request.recv(1024)
             username = username.decode().strip()
             if self.userman.addUser(username, self.request, self.client_address):
                 return username
 
-
-class ChatingServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+class TestServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass
 
 
 def runServer():
-    print('+++ 채팅 서버를 시작합니다.')
-    print('+++ 채텅 서버를 끝내려면 Ctrl-C를 누르세요.')
+    print('Test Server On')
 
     try:
-        server = ChatingServer((HOST, PORT), MyTcpHandler)
+        server = TestServer((HOST, PORT), MyTcpHandler)
         server.serve_forever()
     except KeyboardInterrupt:
-        print('--- 채팅 서버를 종료합니다.')
+        print('Server Off')
         server.shutdown()
         server.server_close()
 
-
 runServer()
+
