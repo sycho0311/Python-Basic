@@ -38,7 +38,9 @@ print(calc2.first)
 '''
 
 class Num():
-    num = 10
+    def __init__(self):
+        self.num = 0
+
     def getterNum(self):
         return self.num
 
@@ -50,3 +52,11 @@ print(num1.num)
 print(num1.getterNum())
 num1.setterNum(20)
 print(num1.getterNum())
+
+class test(Num):
+    pass
+
+def on():
+    server = test(Num)
+
+on()

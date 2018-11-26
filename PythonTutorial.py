@@ -207,3 +207,17 @@ print(sentence[0])
 for i in sentence:
     print(i)
 '''
+
+'''
+s = 'eng kor good job very good'
+msg = s.split()
+
+s = ''
+
+for i in msg[2:len(msg)]:
+    if i == msg[len(msg)-1]:
+        s += i
+
+    else:
+        s += i + ' '
+'''

@@ -1,6 +1,8 @@
 import socketserver
 import threading
 import pymysql
+import codecs
+import json
 
 # to Use SocketServer
 # to Use Client syncronize
@@ -13,6 +15,8 @@ lock = threading.Lock()
 
 # Class : for user management and sending and receiving messages.
 class UserManager(socketserver.BaseRequestHandler):
+
+    JsonFile = 0
 
     def __init__(self):
         # User Info Dictionary {User ID:(socket, address), }
@@ -60,10 +64,13 @@ class UserManager(socketserver.BaseRequestHandler):
 
         # form of sentence : .json
         if message[0] == '/file':
-            print(msg)
+            self.JsonFile += 1
+            # print(message)
+            return
+            # print(msg)
 
         # form of sentence : query
-        if message[0] == '/query':
+        elif message[0] == '/query':
             language = message[1]
             target = message[2]
             sentence = ''
@@ -106,9 +113,17 @@ class UserManager(socketserver.BaseRequestHandler):
             return -1
 
         else:
-            print(msg)
-            msg = 'Please proceed according to the usage.'
-            self.sendMessage(username, msg)
+            if self.JsonFile == 1:
+                print(msg)
+
+                with open('make.json', 'w', encoding="utf-8") as make_file:
+                    json.dump(msg, make_file, ensure_ascii=False, indent="\t")
+
+                self.JsonFile -= 1
+            else:
+                # print(msg)
+                msg = 'Please proceed according to the usage.'
+                self.sendMessage(username, msg)
 
         # self.sendMessageToAll('[%s] %s' % (username, msg))
 
@@ -164,19 +179,15 @@ class MyTcpHandler(socketserver.BaseRequestHandler):
         print('IP Address : [%s] Connection' % self.client_address[0])
 
         try:
-            # 클라이언트 등록
+            # Register Client
             username = self.registerUsername()
-            # 클라이언트로부터 message 수신
-            # message 크기 최대 1024
+            # receive message from Client
+            # message Buffer Size = 1024
             usage = '* Usage *\n' + '1. File Transport : /file filename\n'\
                     + '2. Query : /query Language_to_Translate Target_Language sentence\n'\
                     + '3. Quit : /quit\n'
 
-            # Send Usage
-            self.request.send(usage.encode())
-            msg = self.request.recv(1024)
-
-            while msg:
+            while True:
                 # message = msg.decode()
                 # message = message.split()
 
@@ -186,12 +197,13 @@ class MyTcpHandler(socketserver.BaseRequestHandler):
 
                 # print(msg.decode())
 
+                # Send Usage
+                self.request.send(usage.encode())
+                msg = self.request.recv(1024)
+
                 if self.userman.messageHandler(username, msg.decode()) == -1:
                     self.request.close()
                     break
-
-                self.request.send(usage.encode())
-                msg = self.request.recv(1024)
 
         except Exception as e:
             print(e)

@@ -4,7 +4,7 @@ import codecs
 import urllib.request
 import csv
 
-'''
+
 class Json:
     def func1(self, **kwargs):
         self.str = kwargs
@@ -23,7 +23,6 @@ print(json1.str)
 
 # function json.dumps() dictionary to json string
 print(json.dumps(json1.str, indent=2))
-'''
 
 # Json Function
 # loads() read String, load() read File
@@ -95,6 +94,8 @@ language = {}
 with codecs.open('KorEng.json', 'r', 'utf-8') as f:
     data = json.load(f)
 
+    for i in data:
+        print(i)
     # print(len(data))
 
     for i in data:
