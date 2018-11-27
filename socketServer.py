@@ -1,12 +1,12 @@
 import socketserver
 import threading
 import pymysql
-import codecs
 import json
 
 # to Use SocketServer
 # to Use Client syncronize
 # to Connect MariaDB
+# to read or write .json file
 
 HOST = ''
 PORT = 9009
@@ -16,11 +16,18 @@ lock = threading.Lock()
 # Class : for user management and sending and receiving messages.
 class UserManager(socketserver.BaseRequestHandler):
 
+    UserCount = 0
     JsonFile = 0
 
     def __init__(self):
         # User Info Dictionary {User ID:(socket, address), }
         self.users = {}
+
+    def getterUserCount(self):
+        return self.UserCount
+
+    def setterUserCount(self, UserCount):
+        self.UserCount = UserCount
 
     # Add User ID to self.users
     def addUser(self, username, conn, addr):
@@ -52,6 +59,7 @@ class UserManager(socketserver.BaseRequestHandler):
         del self.users[username]
         lock.release()
 
+        self.UserCount -= 1
         '''
         self.sendMessageToAll('[%s]님이 퇴장했습니다.' % username)
         print('--- 대화 참여자 수 [%d]' % len(self.users))
@@ -120,10 +128,12 @@ class UserManager(socketserver.BaseRequestHandler):
                     json.dump(msg, make_file, ensure_ascii=False, indent="\t")
 
                 self.JsonFile -= 1
+                return
             else:
                 # print(msg)
                 msg = 'Please proceed according to the usage.'
                 self.sendMessage(username, msg)
+                return
 
         # self.sendMessageToAll('[%s] %s' % (username, msg))
 
@@ -181,6 +191,7 @@ class MyTcpHandler(socketserver.BaseRequestHandler):
         try:
             # Register Client
             username = self.registerUsername()
+            print('!!!', username)
             # receive message from Client
             # message Buffer Size = 1024
             usage = '* Usage *\n' + '1. File Transport : /file filename\n'\
@@ -213,11 +224,19 @@ class MyTcpHandler(socketserver.BaseRequestHandler):
 
     # To register a connected client
     def registerUsername(self):
+
+        userCount = self.userman.getterUserCount()
+        userCount += 1
+
         while True:
+            '''
             self.request.send('Input ID : '.encode())
             # 받아온 ID 처리
             username = self.request.recv(1024)
             username = username.decode().strip()
+            '''
+            username = str(userCount)
+            self.userman.setterUserCount(userCount)
 
             if self.userman.addUser(username, self.request, self.client_address):
                 return username

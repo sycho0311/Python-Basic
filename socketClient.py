@@ -30,10 +30,10 @@ class Client:
             """
             # ID --- (for test)############
             # Input ID string
-            self.recv_msg()
-            id_str = str(input())
+            ## self.recv_msg()
+            ## id_str = str(input())
             # Send ID string
-            self.sock.send(id_str.encode())
+            ##self.sock.send(id_str.encode())
             ##############################
             self.main_loop()
 
