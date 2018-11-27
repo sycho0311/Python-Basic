@@ -2,11 +2,17 @@ import socketserver
 import threading
 import pymysql
 import json
+import ast
+import codecs
+import csv
 
 # to Use SocketServer
 # to Use Client syncronize
 # to Connect MariaDB
 # to read or write .json file
+# Type conversion str to dict
+# Streaming Encoder & Decoder
+# to Use .csv
 
 HOST = ''
 PORT = 9009
@@ -122,10 +128,34 @@ class UserManager(socketserver.BaseRequestHandler):
 
         else:
             if self.JsonFile == 1:
-                print(msg)
 
-                with open('make.json', 'w', encoding="utf-8") as make_file:
-                    json.dump(msg, make_file, ensure_ascii=False, indent="\t")
+                dic = {}
+                dic = ast.literal_eval(msg)
+
+                with open('Translation.json', 'w', encoding="utf-8") as make_file:
+                    json.dump(dic, make_file, ensure_ascii=False, indent="\t")
+
+                korean = list()
+                english = list()
+
+                with codecs.open('Translation.json', 'r', 'utf-8') as f:
+                    data = json.load(f)
+
+                    for i in data:
+                        if i == 'kor':
+                            korean = data[i]
+                        elif i == 'eng':
+                            english = data[i]
+
+                korean.insert(0, 'kor')
+                english.insert(0, 'eng')
+
+                '''
+                with open('Translation.csv', 'a', encoding='utf-8', newline='') as csvfile:
+                    writer = csv.writer(csvfile)
+                    writer.writerow(korean)
+                    writer.writerow(english)
+                '''
 
                 self.JsonFile -= 1
                 return
@@ -145,7 +175,7 @@ class UserManager(socketserver.BaseRequestHandler):
             conn.send(msg.encode())
     
     '''
-
+    # Unicast
     # Reply to the person who sent the message
     def sendMessage(self, username, msg):
         user = self.users.get(username)
@@ -184,14 +214,14 @@ class MyTcpHandler(socketserver.BaseRequestHandler):
         return
     '''
 
+    # 클라이언트 접속 요청을 처리하는 함수
     def handle(self):
         # Client address output when client connects
         print('IP Address : [%s] Connection' % self.client_address[0])
 
         try:
             # Register Client
-            username = self.registerUsername()
-            print('!!!', username)
+            username = self.registerUser()
             # receive message from Client
             # message Buffer Size = 1024
             usage = '* Usage *\n' + '1. File Transport : /file filename\n'\
@@ -223,7 +253,7 @@ class MyTcpHandler(socketserver.BaseRequestHandler):
         self.userman.removeUser(username)
 
     # To register a connected client
-    def registerUsername(self):
+    def registerUser(self):
 
         userCount = self.userman.getterUserCount()
         userCount += 1

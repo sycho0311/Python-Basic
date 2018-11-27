@@ -4,7 +4,6 @@
 # import json
 import socket
 
-
 class FileManager:  # ##싱글턴을 쓴다면? 아니면 다른 방법?
     @staticmethod
     def get_path(filename, ext):
@@ -41,10 +40,11 @@ class Client:
     def recv_msg(self):
         try:
             data = self.sock.recv(Client.BUF_SIZE)
-            if self.JsonFile == 1:
-                self.JsonFile = 0
-                return
+
             if data:
+                if self.JsonFile == 1:
+                    self.JsonFile = 0
+                    return
                 print(Client.TAG_SYSTEM, data.decode())
         except:
             pass
@@ -69,8 +69,8 @@ class Client:
                 if cmd_data == '/file':
                     path = FileManager.get_path(input_list[1], Client.EXT_JSON)
                     self.send_file(path)
-                    self.recv_msg()
                     self.JsonFile += 1
+                    self.recv_msg()
                 # query
                 elif cmd_data == '/query':
                     #Get result of query
@@ -98,8 +98,6 @@ class Client:
 
 
 # START
-
-
 client = Client()
 
 

@@ -1,10 +1,11 @@
 import json
+import ast
 import codecs
 
 import urllib.request
 import csv
 
-
+'''
 class Json:
     def func1(self, **kwargs):
         self.str = kwargs
@@ -23,6 +24,7 @@ print(json1.str)
 
 # function json.dumps() dictionary to json string
 print(json.dumps(json1.str, indent=2))
+'''
 
 # Json Function
 # loads() read String, load() read File
@@ -87,16 +89,24 @@ with codecs.open('C:/Users/USER/Desktop/Python-Basic/name.json', 'r', 'utf-8') a
             print(i, info)
 '''
 
+dic = {}
+
+msg = '{' + '\n\t' + '"kor": ["안녕", "안녕하세요", "잘가요", "잘했어", "한글과컴퓨터"],' + '\n\t' + '"eng": ["Hi", "Hello", "Good Bye", "Good Job", "Hancom"]' + '\n' + '}'
+
+dic = ast.literal_eval(msg)
+
+# dic = msg
+print(dic)
+
+with open('make.json', 'w', encoding="utf-8") as make_file:
+    json.dump(dic, make_file, ensure_ascii=False, indent="\t")
+
 korean = list()
 english = list()
 language = {}
 
-with codecs.open('KorEng.json', 'r', 'utf-8') as f:
+with codecs.open('make.json', 'r', 'utf-8') as f:
     data = json.load(f)
-
-    for i in data:
-        print(i)
-    # print(len(data))
 
     for i in data:
         if i == 'kor':
@@ -106,16 +116,6 @@ with codecs.open('KorEng.json', 'r', 'utf-8') as f:
 
 korean.insert(0, 'KOREAN')
 english.insert(0, 'ENGLISH')
-
-'''
-for i in range(len(english)):
-    kor = korean[i]
-    eng = english[i]
-
-    language[str(kor)] = str(eng)
-'''
-
-list_out = []
 
 with open('test_out.csv', 'a', encoding='utf-8', newline='') as csvfile:
     writer = csv.writer(csvfile)
