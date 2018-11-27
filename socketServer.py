@@ -96,7 +96,7 @@ class UserManager(socketserver.BaseRequestHandler):
                 else:
                     sentence += i + ' '
 
-            conn = pymysql.connect(host='localhost', user='root', password='1234', db='pythondb', charset='utf8')
+            conn = pymysql.connect(host='localhost', port=3306, user='root', password='1234', db='pythondb', charset='utf8')
 
             try:
                 with conn.cursor() as curs:
@@ -147,17 +147,19 @@ class UserManager(socketserver.BaseRequestHandler):
                         elif i == 'eng':
                             english = data[i]
 
-                korean.insert(0, 'kor')
-                english.insert(0, 'eng')
+                conn = pymysql.connect(host='localhost', port=3306, user='root', password='1234', db='pythondb', charset='utf8')
 
-                '''
-                with open('Translation.csv', 'a', encoding='utf-8', newline='') as csvfile:
-                    writer = csv.writer(csvfile)
-                    writer.writerow(korean)
-                    writer.writerow(english)
-                '''
+                try:
+                    with conn.cursor() as curs:
+                        sql = "insert into translation (eng, kor) values (%s, %s)"
+                        for i in range(len(korean)):
+                            curs.execute(sql, (english[i], korean[i]))
 
-                self.JsonFile -= 1
+                    conn.commit()
+
+                finally:
+                    conn.close()
+
                 return
             else:
                 # print(msg)

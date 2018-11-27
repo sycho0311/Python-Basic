@@ -88,7 +88,7 @@ with codecs.open('C:/Users/USER/Desktop/Python-Basic/name.json', 'r', 'utf-8') a
         for info in data[i]:
             print(i, info)
 '''
-
+'''
 dic = {}
 
 msg = '{' + '\n\t' + '"kor": ["안녕", "안녕하세요", "잘가요", "잘했어", "한글과컴퓨터"],' + '\n\t' + '"eng": ["Hi", "Hello", "Good Bye", "Good Job", "Hancom"]' + '\n' + '}'
@@ -100,6 +100,7 @@ print(dic)
 
 with open('make.json', 'w', encoding="utf-8") as make_file:
     json.dump(dic, make_file, ensure_ascii=False, indent="\t")
+'''
 
 korean = list()
 english = list()
@@ -114,10 +115,16 @@ with codecs.open('make.json', 'r', 'utf-8') as f:
         elif i == 'eng':
             english = data[i]
 
+for i in range(len(korean)):
+    print(korean[i])
+    print(english[i])
+
 korean.insert(0, 'KOREAN')
 english.insert(0, 'ENGLISH')
 
+'''
 with open('test_out.csv', 'a', encoding='utf-8', newline='') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(korean)
     writer.writerow(english)
+'''
