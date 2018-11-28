@@ -160,6 +160,8 @@ class UserManager(socketserver.BaseRequestHandler):
                 finally:
                     conn.close()
 
+                self.JsonFile = 0
+
                 return
             else:
                 # print(msg)

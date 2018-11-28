@@ -91,7 +91,7 @@ with codecs.open('C:/Users/USER/Desktop/Python-Basic/name.json', 'r', 'utf-8') a
 '''
 dic = {}
 
-msg = '{' + '\n\t' + '"kor": ["안녕", "안녕하세요", "잘가요", "잘했어", "한글과컴퓨터"],' + '\n\t' + '"eng": ["Hi", "Hello", "Good Bye", "Good Job", "Hancom"]' + '\n' + '}'
+msg = '{' + '\n\t' + '"kor": ["안녕", "안녕하세요", "잘가요", "잘했어"],' + '\n\t' + '"eng": ["Hi", "Hello", "Good Bye", "Good Job"]' + '\n' + '}'
 
 dic = ast.literal_eval(msg)
 

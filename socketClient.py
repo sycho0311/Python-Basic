@@ -11,7 +11,7 @@ class FileManager:  # ##싱글턴을 쓴다면? 아니면 다른 방법?
         return path
 
 class Client:
-    HOST = '172.30.4.176'
+    HOST = 'localhost'
     PORT = 9009
     BUF_SIZE = 1024
     TAG_SYSTEM = '<system>'
